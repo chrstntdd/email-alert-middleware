@@ -11,8 +11,8 @@ const {logger} = require('./utilities/logger');
 // these are custom errors we've created
 const {FooError, BarError, BizzError} = require('./errors');
 
-//load sendEmail
-const {sendEmail} = require('/emailer');////
+//load authored middleware
+const {errorHandlingMiddleware} = require('./middleware/error-handling');
 
 const app = express();
 
@@ -20,8 +20,7 @@ const app = express();
 // `BarError`, or `BizzError`
 const russianRoulette = (req, res) => {
   const errors = [FooError, BarError, BizzError];
-  throw new errors[
-    Math.floor(Math.random() * errors.length)]('It blew up!');
+  throw new errors [Math.floor(Math.random() * errors.length)]('It blew up!');
 };
 
 
@@ -34,7 +33,8 @@ app.get('*', russianRoulette);
 // `app.use()`. It needs to come BEFORE the `app.use` call
 // below, which sends a 500 and error message to the client
 
-app.use()
+// call authored middleware
+app.use(errorHandlingMiddleware());
 
 app.use((err, req, res, next) => {
   logger.error(err);
